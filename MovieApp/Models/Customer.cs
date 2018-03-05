@@ -15,5 +15,6 @@ namespace MovieApp.Models
         public bool isSuscribedToNewsletter { get; set; }
         public MembershipType MembershipType { get; set; }
         public byte MembershipTypeId { get; set; }
+        public DateTime? BirthDate { get; set; }
     }
 }
