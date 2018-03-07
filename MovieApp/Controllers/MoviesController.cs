@@ -23,6 +23,55 @@ namespace MovieApp.Controllers
             _context.Dispose();
         }
 
+        public ViewResult New()
+        {
+            var genres = _context.Genres.ToList();
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = genres
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Movies movie)
+        {
+            if (movie.ID == 0)
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(m => m.ID == movie.ID);
+                movieInDb.Name = movie.Name;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Movies");
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var movie = _context.Movies.SingleOrDefault(c => c.ID == id);
+
+            if (movie == null)
+                return HttpNotFound();
+
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
         public ViewResult Index()
         {
             //var movies = GetMovies();
@@ -73,10 +122,7 @@ namespace MovieApp.Controllers
            
         }
 
-        public ActionResult Edit(int id)
-        {
-            return Content("id = " + id);
-        }
+        
 
         /*public ActionResult Index(int? pageIndex, string sortBy)
         {
